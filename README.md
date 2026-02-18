@@ -1,6 +1,6 @@
 # Bird Inference API
 
-API de inferência de aves com FastAPI e TensorFlow.
+API de inferência com FastAPI e TensorFlow.
 
 ## Objetivo
 

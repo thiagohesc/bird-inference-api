@@ -1,0 +1,32 @@
+services:
+  bird-api:
+    build:
+      context: ./
+    container_name: bird-api
+    command: uvicorn app.app:app --host 0.0.0.0 --port ${API_PORT:-8001}
+    environment:
+      MINIO_URL: ${MINIO_URL:-http://minio:9000}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      S3_BUCKET: ${S3_BUCKET:-arquive}
+      S3_MODEL_KEY: ${S3_MODEL_KEY:-model.keras}
+      S3_CLASSES_KEY: ${S3_CLASSES_KEY:-classes.txt}
+      MODEL_PATH: ${MODEL_PATH:-app/data/model.keras}
+      CLASSES_PATH: ${CLASSES_PATH:-app/data/classes.txt}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NET:-traefik-net}"
+      - "traefik.http.routers.bird.rule=Host(`${BIRD_DOMAIN:-bird.localhost}`)"
+      - "traefik.http.routers.bird.entrypoints=websecure"
+      - "traefik.http.routers.bird.tls=true"
+      - "traefik.http.routers.bird.tls.certresolver=cloudflare"
+      - "traefik.http.services.bird.loadbalancer.server.port=${API_PORT:-8001}"
+    volumes:
+      - ./app/logs:/app/logs
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: ${TRAEFIK_NET:-traefik-net}
+    external: true

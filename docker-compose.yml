@@ -30,3 +30,6 @@ networks:
   traefik:
     name: ${TRAEFIK_NET:-traefik-net}
     external: true
+  internal:
+    external: true
+    name: ${INTERNAL_NET}
